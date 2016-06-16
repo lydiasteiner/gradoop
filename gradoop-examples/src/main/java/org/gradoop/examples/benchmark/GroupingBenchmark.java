@@ -162,10 +162,8 @@ public class GroupingBenchmark extends AbstractRunner
     // initialize EPGM database
     LogicalGraph<GraphHeadPojo, VertexPojo, EdgePojo> graphDatabase =
       readLogicalGraph(inputPath, false);
-    // initialize grouping method
 
-    boolean customAgg = cmd.hasOption(OPTION_AGGREGATION);
-    String aggV = customAgg ? cmd.getOptionValue(OPTION_AGGREGATION) : "count";
+    String aggV =  cmd.getOptionValue(OPTION_AGGREGATION);
 
     PropertyValueAggregator agg = null;
     switch (aggV){
@@ -208,9 +206,13 @@ public class GroupingBenchmark extends AbstractRunner
       new Grouping.GroupingBuilder()
         .setStrategy(GroupingStrategy.GROUP_REDUCE)
         .useVertexLabel(useVertexLabels)
-        .useEdgeLabel(useEdgeLabels)
+        .useEdgeLabel(useEdgeLabels);
+
+    if(agg != null) {
+      builder
         .addVertexAggregator(agg)
         .addEdgeAggregator(agg);
+    }
 
     for(String vKey : vertexKeys) {
       builder.addVertexGroupingKey(vKey);
@@ -243,11 +245,11 @@ public class GroupingBenchmark extends AbstractRunner
     if(cmd.hasOption(OPTION_AGGREGATION)) {
       String aggV = cmd.getOptionValue(OPTION_AGGREGATION);
       Set<String> validAggs = new HashSet<>(
-        Arrays.asList("min", "max", "count" ));
+        Arrays.asList("min", "max", "count", "none" ));
       if(!validAggs.contains(aggV)) {
         throw new IllegalArgumentException(
           "Can't recognize aggregation function. Valid parameters are: " +
-            "{count, min, max}."
+            "{count, min, max, none}."
         );
       }
     }
