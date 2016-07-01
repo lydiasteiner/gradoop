@@ -17,7 +17,6 @@
 
 package org.gradoop.model.impl;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.GroupReduceFunction;
 import org.apache.flink.api.java.DataSet;
@@ -331,7 +330,7 @@ public class GraphCollection
    */
   @Override
   public GraphCollection<G, V, E> sortBy(String propertyKey, Order order) {
-    return callForCollection(new SortGraphCollection<G,V,E>(
+    return callForCollection(new SortGraphCollection<G, V, E>(
       propertyKey, order));
   }
 

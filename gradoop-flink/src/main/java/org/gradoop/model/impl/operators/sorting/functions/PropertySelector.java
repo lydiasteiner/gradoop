@@ -17,11 +17,8 @@
 
 package org.gradoop.model.impl.operators.sorting.functions;
 
-import org.apache.flink.api.java.functions.FunctionAnnotation;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple1;
 import org.gradoop.model.api.EPGMElement;
-import org.gradoop.model.impl.id.GradoopId;
 import org.gradoop.model.impl.properties.PropertyValue;
 
 /**
@@ -29,20 +26,30 @@ import org.gradoop.model.impl.properties.PropertyValue;
  *
  * @param <EL> element type
  */
-@FunctionAnnotation.ForwardedFields("id->*")
 public class PropertySelector<EL extends EPGMElement>
   implements KeySelector<EL, PropertyValue> {
 
-
+  /**
+   * Key of the property, that is to be selected.
+   */
   private String propertyKey;
 
+  /**
+   * Constructor
+   *
+   * @param propertyKey key of property that is to be selected
+   */
   public PropertySelector(String propertyKey) {
     this.propertyKey = propertyKey;
   }
 
+  /**
+   * Return the value
+   * @param element element type
+   * @return property value
+   */
   @Override
-  public PropertyValue getKey(EL element) throws Exception {
-    System.out.println(element.getPropertyValue(propertyKey));
+  public PropertyValue getKey(EL element) {
     return element.getPropertyValue(propertyKey);
   }
 }

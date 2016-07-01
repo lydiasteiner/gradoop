@@ -25,12 +25,32 @@ import org.gradoop.model.impl.GraphCollection;
 import org.gradoop.model.impl.operators.sorting.functions.PropertySelector;
 import org.gradoop.util.Order;
 
+/**
+ * Sorts the graphs in a graph collection by the value of a specified
+ * property key.
+ *
+ * @param <G> graph head type
+ * @param <V> vertex type
+ * @param <E> edge type
+ */
 public class SortGraphCollection<G extends EPGMGraphHead, V extends
   EPGMVertex, E extends EPGMEdge> implements
   UnaryCollectionToCollectionOperator<G, V, E> {
+  /**
+   * Key that specifies the property used to sort.
+   */
   private String propertyKey;
+  /**
+   * Order in which to sort: Ascending or Descending.
+   */
   private org.apache.flink.api.common.operators.Order order;
 
+  /**
+   * Constructor
+   *
+   * @param propertyKey key that specifies the property used to sort
+   * @param order ascending or descending order
+   */
   public SortGraphCollection(String propertyKey, Order order) {
     this.propertyKey = propertyKey;
 
@@ -43,18 +63,27 @@ public class SortGraphCollection<G extends EPGMGraphHead, V extends
     }
   }
 
-  @Override
-  public String getName() {
-    return SortGraphCollection.class.getName();
-  }
-
+  /**
+   * {@inheritDoc}
+   *
+   * @param collection input collection
+   * @return
+   */
   @Override
   public GraphCollection<G, V, E> execute(GraphCollection<G, V, E> collection) {
     DataSet<G> newGraphHeads = collection.getGraphHeads();
     newGraphHeads.partitionByRange(new PropertySelector<G>(propertyKey));
     newGraphHeads = newGraphHeads.sortPartition(
       new PropertySelector<G>(propertyKey), order);
-    return GraphCollection.fromDataSets(newGraphHeads, collection.getVertices
-      (), collection.getEdges(), collection.getConfig());
+    return GraphCollection.fromDataSets(newGraphHeads, collection.getVertices(),
+      collection.getEdges(), collection.getConfig());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getName() {
+    return SortGraphCollection.class.getName();
   }
 }
