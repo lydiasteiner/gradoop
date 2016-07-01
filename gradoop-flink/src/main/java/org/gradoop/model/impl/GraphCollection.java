@@ -59,6 +59,7 @@ import org.gradoop.model.impl.operators.intersection.Intersection;
 import org.gradoop.model.impl.operators.intersection.IntersectionBroadcast;
 import org.gradoop.model.impl.operators.limit.Limit;
 import org.gradoop.model.impl.operators.selection.Selection;
+import org.gradoop.model.impl.operators.sorting.SortGraphCollection;
 import org.gradoop.model.impl.operators.tostring.functions.EdgeToDataString;
 import org.gradoop.model.impl.operators.tostring.functions.EdgeToIdString;
 import org.gradoop.model.impl.operators.tostring.functions
@@ -330,7 +331,8 @@ public class GraphCollection
    */
   @Override
   public GraphCollection<G, V, E> sortBy(String propertyKey, Order order) {
-    throw new NotImplementedException();
+    return callForCollection(new SortGraphCollection<G,V,E>(
+      propertyKey, order));
   }
 
   /**
