@@ -54,7 +54,7 @@ public class PokecToImportVertex
       if(value.equals("null")) {
         break;
       }
-      if(value.length() > 20) {
+      if(value.length() > 50) {
         break;
       }
       Property property = Property.create(COLUMNS[i], value);
