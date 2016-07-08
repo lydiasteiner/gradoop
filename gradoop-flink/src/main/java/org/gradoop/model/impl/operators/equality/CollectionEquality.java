@@ -45,10 +45,6 @@ public class CollectionEquality
    */
   private final CanonicalAdjacencyMatrixBuilder
     <G, V, E> canonicalAdjacencyMatrixBuilder;
-  /**
-   * sets mode for directed or undirected graphs
-   */
-  private final boolean directed;
 
   /**
    * constructor to set string representations
@@ -60,10 +56,12 @@ public class CollectionEquality
   public CollectionEquality(GraphHeadToString<G> graphHeadToString,
     VertexToString<V> vertexToString, EdgeToString<E> edgeToString,
     boolean directed) {
-    this.directed = directed;
+    /*
+    sets mode for directed or undirected graphs
+   */
     this.canonicalAdjacencyMatrixBuilder =
       new CanonicalAdjacencyMatrixBuilder<>(
-        graphHeadToString, vertexToString, edgeToString, this.directed);
+        graphHeadToString, vertexToString, edgeToString, directed);
   }
 
   @Override
