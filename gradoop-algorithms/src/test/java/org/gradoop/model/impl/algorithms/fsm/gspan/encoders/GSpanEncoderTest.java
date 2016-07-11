@@ -28,7 +28,6 @@ import org.gradoop.model.impl.pojo.VertexPojo;
 import org.gradoop.model.impl.tuples.WithCount;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
