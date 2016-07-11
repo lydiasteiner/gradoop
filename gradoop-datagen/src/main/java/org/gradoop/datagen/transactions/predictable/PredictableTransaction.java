@@ -97,7 +97,7 @@ public class PredictableTransaction
   @Override
   public GraphTransaction<G, V, E> map(Long graphNumber) throws Exception {
 
-    Long maxVertexLabelIndex = graphNumber % 10;
+    Long maxVertexLabelIndex = graphNumber - 1 % 10;
 
     G graphHead = graphHeadFactory
       .createGraphHead(String.valueOf(maxVertexLabelIndex));

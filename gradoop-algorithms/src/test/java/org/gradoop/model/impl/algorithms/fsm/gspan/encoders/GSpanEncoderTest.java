@@ -1,8 +1,10 @@
 package org.gradoop.model.impl.algorithms.fsm.gspan.encoders;
 
 
+import org.apache.commons.io.FileUtils;
 import org.apache.flink.api.java.DataSet;
-import org.gradoop.datagen.transactions.predictable.PredictableTransactionsGenerator;
+import org.gradoop.datagen.transactions.predictable
+  .PredictableTransactionsGenerator;
 import org.gradoop.io.api.DataSink;
 import org.gradoop.io.impl.tlf.TLFDataSink;
 import org.gradoop.io.impl.tlf.TLFDataSource;
@@ -12,9 +14,11 @@ import org.gradoop.model.impl.GraphTransactions;
 import org.gradoop.model.impl.algorithms.fsm.config.FSMConfig;
 import org.gradoop.model.impl.algorithms.fsm.gspan.api.GSpanEncoder;
 import org.gradoop.model.impl.algorithms.fsm.gspan.api.GSpanMiner;
-import org.gradoop.model.impl.algorithms.fsm.gspan.comparators.DFSCodeComparator;
+import org.gradoop.model.impl.algorithms.fsm.gspan.comparators
+  .DFSCodeComparator;
 import org.gradoop.model.impl.algorithms.fsm.gspan.functions.MinDFSCode;
-import org.gradoop.model.impl.algorithms.fsm.gspan.miners.bulkiteration.GSpanBulkIteration;
+import org.gradoop.model.impl.algorithms.fsm.gspan.miners.bulkiteration
+  .GSpanBulkIteration;
 import org.gradoop.model.impl.algorithms.fsm.gspan.pojos.CompressedDFSCode;
 import org.gradoop.model.impl.algorithms.fsm.gspan.pojos.DFSCode;
 import org.gradoop.model.impl.algorithms.fsm.gspan.pojos.GSpanGraph;
@@ -24,6 +28,7 @@ import org.gradoop.model.impl.pojo.VertexPojo;
 import org.gradoop.model.impl.tuples.WithCount;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;

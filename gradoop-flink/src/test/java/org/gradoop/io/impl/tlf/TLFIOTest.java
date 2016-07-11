@@ -52,22 +52,18 @@ public class TLFIOTest extends GradoopFlinkTestBase {
       originalCollection =
       loader.getGraphCollectionByVariables("g1", "g2");
 
-    String filePath =
+    String tlfFile =
       TLFIOTest.class.getResource("/data/tlf").getFile() + "/io_test_rw.tlf";
-
-    new File(filePath).createNewFile();
 
     // create data sink
     DataSink<GraphHeadPojo, VertexPojo, EdgePojo> dataSink =
-      new TLFDataSink<>(filePath, config);
+      new TLFDataSink<>(tlfFile, config);
 
     dataSink.write(originalCollection);
 
-    getExecutionEnvironment().execute();
-
     // create data source
     TLFDataSource<GraphHeadPojo, VertexPojo, EdgePojo> dataSource =
-      new TLFDataSource<>(filePath, config);
+      new TLFDataSource<>(tlfFile, config);
 
     //get transactions
     GraphTransactions<GraphHeadPojo, VertexPojo, EdgePojo> transactions

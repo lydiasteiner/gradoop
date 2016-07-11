@@ -28,6 +28,7 @@ import org.gradoop.io.impl.tlf.tuples.TLFGraphHead;
 import org.gradoop.io.impl.tlf.tuples.TLFVertex;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Reads graph imported from a TLF file. The result of the mapping is a
@@ -58,7 +59,8 @@ public class TLFGraphFromText
       if (firstLine) {
         graphHead = new TLFGraphHead(inputTuple.f0.get());
         firstLine = false;
-      } else {
+      }
+      else {
         String[] fields = line.split(" ");
 
         if (fields[0].equals(TLFVertex.SYMBOL)) {

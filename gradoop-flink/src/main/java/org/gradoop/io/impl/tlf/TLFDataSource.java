@@ -24,13 +24,13 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.gradoop.io.api.DataSource;
 import org.gradoop.io.impl.tlf.functions.Dictionary;
-import org.gradoop.io.impl.tlf.functions.DictionaryEntry;
 import org.gradoop.io.impl.tlf.functions.EdgeLabelDecoder;
-import org.gradoop.io.impl.tlf.functions.GraphTransactionFromTLFGraph;
-import org.gradoop.io.impl.tlf.functions.TLFFileFormat;
+import org.gradoop.io.impl.tlf.functions.DictionaryEntry;
 import org.gradoop.io.impl.tlf.functions.TLFGraphFromText;
 import org.gradoop.io.impl.tlf.functions.VertexLabelDecoder;
 import org.gradoop.io.impl.tlf.inputformats.TLFInputFormat;
+import org.gradoop.io.impl.tlf.functions.GraphTransactionFromTLFGraph;
+import org.gradoop.io.impl.tlf.functions.TLFFileFormat;
 import org.gradoop.io.impl.tlf.tuples.TLFGraph;
 import org.gradoop.model.api.EPGMEdge;
 import org.gradoop.model.api.EPGMGraphHead;
@@ -122,8 +122,7 @@ public class TLFDataSource
       .map(new GraphTransactionFromTLFGraph<>(
         getConfig().getGraphHeadFactory(),
         getConfig().getVertexFactory(),
-        getConfig().getEdgeFactory()))
-        .returns(GraphTransaction.getTypeInformation(getConfig()));
+        getConfig().getEdgeFactory()));
 
     // map the integer valued labels to strings from dictionary
     if (hasVertexDictionary()) {

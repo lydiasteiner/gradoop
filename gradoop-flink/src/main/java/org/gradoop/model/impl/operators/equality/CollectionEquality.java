@@ -43,8 +43,8 @@ public class CollectionEquality
    * builder to create the string representations of graph collections used for
    * comparison.
    */
-  private final
-  CanonicalAdjacencyMatrixBuilder<G, V, E> canonicalAdjacencyMatrixBuilder;
+  private final CanonicalAdjacencyMatrixBuilder
+    <G, V, E> canonicalAdjacencyMatrixBuilder;
 
   /**
    * constructor to set string representations
