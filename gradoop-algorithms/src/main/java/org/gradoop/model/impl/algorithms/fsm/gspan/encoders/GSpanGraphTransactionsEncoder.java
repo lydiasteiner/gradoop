@@ -70,6 +70,19 @@ public class GSpanGraphTransactionsEncoder
    * vertex label dictionary
    */
   private DataSet<List<String>> vertexLabelDictionary;
+  /**
+   * FSM configuration
+   */
+  private final FSMConfig fsmConfig;
+
+  /**
+   * Constructor
+   *
+   * @param fsmConfig FSM configuration
+   */
+  public GSpanGraphTransactionsEncoder(FSMConfig fsmConfig) {
+    this.fsmConfig = fsmConfig;
+  }
 
   /**
    * determines edge label frequency and prunes by minimum frequency;
@@ -77,30 +90,26 @@ public class GSpanGraphTransactionsEncoder
    * to a smaller numeric label;
    *
    * @param transactions input transactions
-   * @param fsmConfig FSM configuration
    * @return pruned and relabelled edges
    */
   @Override
-  public DataSet<GSpanGraph> encode(
-    GraphTransactions<G, V, E> transactions, FSMConfig fsmConfig) {
+  public DataSet<GSpanGraph> encode(GraphTransactions<G, V, E> transactions) {
 
-    setMinFrequency(transactions, fsmConfig);
+    setMinFrequency(transactions);
 
     DataSet<Collection<EdgeTripleWithStringEdgeLabel<GradoopId>>>
       triplesWithStringLabel = encodeVertices(transactions);
 
-    return encodeEdges(triplesWithStringLabel);
+    return encodeEdges(triplesWithStringLabel, fsmConfig);
   }
 
   /**
    * Calculates and stores minimum frequency
    * (minimum support * collection size).
+   *  @param transactions input graph transactions
    *
-   * @param transactions input graph transactions
-   * @param fsmConfig FSM configuration
    */
-  private void setMinFrequency(
-    GraphTransactions<G, V, E> transactions, FSMConfig fsmConfig) {
+  private void setMinFrequency(GraphTransactions<G, V, E> transactions) {
 
     this.minFrequency = Count
       .count(transactions.getTransactions())
@@ -112,11 +121,12 @@ public class GSpanGraphTransactionsEncoder
    * filters edges by label frequency and translates edge labels
    *
    * @param tripleCollections input edges
+   * @param fsmConfig FSM configuration
    * @return translated and filtered edges
    */
   private DataSet<GSpanGraph> encodeEdges(
-    DataSet<Collection<EdgeTripleWithStringEdgeLabel<GradoopId>>>
-      tripleCollections) {
+    DataSet<Collection<EdgeTripleWithStringEdgeLabel<GradoopId>>> tripleCollections,
+    FSMConfig fsmConfig) {
 
     edgeLabelDictionary = tripleCollections
       .flatMap(new EdgeLabels<GradoopId>())
@@ -131,7 +141,7 @@ public class GSpanGraphTransactionsEncoder
       .map(new InverseDictionary());
 
     return tripleCollections
-      .map(new EdgeLabelsEncoder<GradoopId>())
+      .map(new EdgeLabelsEncoder<GradoopId>(fsmConfig))
       .withBroadcastSet(reverseDictionary, BroadcastNames.EDGE_DICTIONARY);
   }
 

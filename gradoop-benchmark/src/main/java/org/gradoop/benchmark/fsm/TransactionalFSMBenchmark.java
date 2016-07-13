@@ -134,7 +134,7 @@ public class TransactionalFSMBenchmark
     DataSet<TLFGraph> graphs = tlfSource.getTLFGraphs();
 
     // set encoder
-    GSpanEncoder encoder = new GSpanTLFGraphEncoder<>();
+    GSpanEncoder encoder = new GSpanTLFGraphEncoder<>(fsmConfig);
 
     // set miner
     GSpanMiner miner;
@@ -149,7 +149,7 @@ public class TransactionalFSMBenchmark
     FSMConfig fsmConfig = new FSMConfig(threshold, directed);
 
     // encode
-    DataSet<GSpanGraph> gsGraph = encoder.encode(graphs, fsmConfig);
+    DataSet<GSpanGraph> gsGraph = encoder.encode(graphs);
 
     // mine
     DataSet<WithCount<CompressedDFSCode>> frequentSubgraphs =

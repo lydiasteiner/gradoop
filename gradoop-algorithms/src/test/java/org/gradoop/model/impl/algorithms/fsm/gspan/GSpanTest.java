@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.gradoop.model.GradoopFlinkTestBase;
 import org.gradoop.model.impl.GraphCollection;
 import org.gradoop.model.impl.algorithms.fsm.config.FSMConfig;
-import org.gradoop.model.impl.algorithms.fsm.gspan.GSpan;
 import org.gradoop.model.impl.algorithms.fsm.gspan.api.GSpanEncoder;
 import org.gradoop.model.impl.algorithms.fsm.gspan.encoders
   .GSpanGraphCollectionEncoder;
@@ -69,14 +68,13 @@ public class GSpanTest extends GradoopFlinkTestBase {
     GraphCollection<GraphHeadPojo, VertexPojo, EdgePojo> searchSpace =
       loader.getGraphCollectionByVariables("g1");
 
-    GSpanEncoder<GraphCollection<GraphHeadPojo, VertexPojo, EdgePojo>> encoder =
-      new GSpanGraphCollectionEncoder<>();
-
     FSMConfig fsmConfig = FSMConfig.forDirectedMultigraph(0.7f);
 
+    GSpanEncoder<GraphCollection<GraphHeadPojo, VertexPojo, EdgePojo>> encoder =
+      new GSpanGraphCollectionEncoder<>(fsmConfig);
 
     Collection<GSpanGraph> graphs = encoder
-      .encode(searchSpace, fsmConfig).collect();
+      .encode(searchSpace).collect();
 
     // create GSpanGraph
     GSpanGraph transaction = graphs.iterator().next();

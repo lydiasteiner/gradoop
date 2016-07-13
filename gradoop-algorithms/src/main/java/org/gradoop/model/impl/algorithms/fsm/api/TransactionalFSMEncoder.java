@@ -18,7 +18,6 @@
 package org.gradoop.model.impl.algorithms.fsm.api;
 
 import org.apache.flink.api.java.DataSet;
-import org.gradoop.model.impl.algorithms.fsm.config.FSMConfig;
 
 import java.util.List;
 
@@ -34,10 +33,9 @@ public interface TransactionalFSMEncoder<C, G> {
    * Triggers pre processing
    *
    * @param input input data
-   * @param fsmConfig FSM configuration
    * @return edge triples with frequent labels
    */
-  DataSet<G> encode(C input, FSMConfig fsmConfig);
+  DataSet<G> encode(C input);
 
   /**
    * Getter.

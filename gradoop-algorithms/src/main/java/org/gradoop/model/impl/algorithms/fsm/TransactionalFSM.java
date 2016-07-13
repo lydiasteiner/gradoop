@@ -68,7 +68,7 @@ public class TransactionalFSM
   public TransactionalFSM(FSMConfig fsmConfig, TransactionalFSMAlgorithm
     algorithm) {
     this.fsmConfig = fsmConfig;
-    this.encoder = new GSpanGraphCollectionEncoder<G, V, E>() {
+    this.encoder = new GSpanGraphCollectionEncoder<G, V, E>(fsmConfig) {
     };
     setMiner(algorithm);
   }
@@ -83,7 +83,7 @@ public class TransactionalFSM
     GSpanGraphCollectionDecoder<G, V, E> decoder =
       new GSpanGraphCollectionDecoder<>(collection.getConfig());
 
-    DataSet<GSpanGraph> graphs = encoder.encode(collection, fsmConfig);
+    DataSet<GSpanGraph> graphs = encoder.encode(collection);
 
     DataSet<WithCount<CompressedDFSCode>> frequentDfsCodes = miner
       .mine(graphs, encoder.getMinFrequency(), fsmConfig);

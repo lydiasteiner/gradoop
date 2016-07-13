@@ -53,15 +53,17 @@ public class GSpanEncoderTest extends GradoopFlinkTestBase {
 
     DataSet<TLFGraph> graphs = dataSource.getTLFGraphs();
 
-    GSpanEncoder tlfEncoder = new GSpanTLFGraphEncoder<>();
-    GSpanEncoder tnsEncoder = new GSpanGraphTransactionsEncoder<>();
+    FSMConfig fsmConfig = new FSMConfig(1.0f, true);
+
+
+    GSpanEncoder tlfEncoder = new GSpanTLFGraphEncoder(fsmConfig);
+    GSpanEncoder tnsEncoder = new GSpanGraphTransactionsEncoder<>(fsmConfig);
     GSpanMiner miner = new GSpanBulkIteration();
 
     miner.setExecutionEnvironment(getExecutionEnvironment());
-    FSMConfig fsmConfig = new FSMConfig(1.0f, true);
 
-    DataSet<GSpanGraph> tlfSearchSpace = tlfEncoder.encode(graphs, fsmConfig);
-    DataSet<GSpanGraph> tnsSearchSpace = tnsEncoder.encode(transactions, fsmConfig);
+    DataSet<GSpanGraph> tlfSearchSpace = tlfEncoder.encode(graphs);
+    DataSet<GSpanGraph> tnsSearchSpace = tnsEncoder.encode(transactions);
 
     assertEquals(tlfSearchSpace.count(), tnsSearchSpace.count());
 
@@ -85,18 +87,18 @@ public class GSpanEncoderTest extends GradoopFlinkTestBase {
     TLFDataSource<GraphHeadPojo, VertexPojo, EdgePojo> dataSource =
       new TLFDataSource<>(tlfFile, config);
 
-    GSpanEncoder tlfEncoder = new GSpanTLFGraphEncoder<>();
-    GSpanEncoder tnsEncoder = new GSpanGraphTransactionsEncoder<>();
+    FSMConfig fsmConfig = new FSMConfig(0.5f, false);
+
+    GSpanEncoder tlfEncoder = new GSpanTLFGraphEncoder(fsmConfig);
+    GSpanEncoder tnsEncoder = new GSpanGraphTransactionsEncoder<>(fsmConfig);
     GSpanMiner miner = new GSpanBulkIteration();
 
     miner.setExecutionEnvironment(getExecutionEnvironment());
-    FSMConfig fsmConfig = new FSMConfig(0.5f, false);
 
     DataSet<GSpanGraph> tlfSearchSpace = tlfEncoder
-      .encode(dataSource.getTLFGraphs(), fsmConfig);
+      .encode(dataSource.getTLFGraphs());
     DataSet<GSpanGraph> tnsSearchSpace = tnsEncoder
-      .encode(dataSource.getGraphTransactions(),
-      fsmConfig);
+      .encode(dataSource.getGraphTransactions());
 
     assertEquals(tlfSearchSpace.count(), tnsSearchSpace.count());
 
@@ -114,28 +116,29 @@ public class GSpanEncoderTest extends GradoopFlinkTestBase {
     TLFDataSource<GraphHeadPojo, VertexPojo, EdgePojo> dataSource =
       getDataSource();
 
-    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      tEncoder = new GSpanGraphTransactionsEncoder<>();
-
-    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      cEncoder = new GSpanGraphCollectionEncoder<>();
-
-    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder();
-
     FSMConfig fsmConfig = FSMConfig.forDirectedMultigraph(0.1f);
 
+    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      tEncoder = new GSpanGraphTransactionsEncoder<>(fsmConfig);
+
+    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      cEncoder = new GSpanGraphCollectionEncoder<>(fsmConfig);
+
+    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder(fsmConfig);
+
+
     List<DFSCode> tGraphs = tEncoder
-      .encode(dataSource.getGraphTransactions(), fsmConfig)
+      .encode(dataSource.getGraphTransactions())
       .map(new MinDFSCode(fsmConfig))
       .collect();
 
     List<DFSCode> cGraphs = cEncoder
-      .encode(dataSource.getGraphCollection(), fsmConfig)
+      .encode(dataSource.getGraphCollection())
       .map(new MinDFSCode(fsmConfig))
       .collect();
 
     List<DFSCode> tlfGraphs = tlfEncoder
-      .encode(dataSource.getTLFGraphs(), fsmConfig)
+      .encode(dataSource.getTLFGraphs())
       .map(new MinDFSCode(fsmConfig))
       .collect();
 
@@ -162,19 +165,20 @@ public class GSpanEncoderTest extends GradoopFlinkTestBase {
     TLFDataSource<GraphHeadPojo, VertexPojo, EdgePojo> dataSource =
       getDataSource();
 
-    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      tEncoder = new GSpanGraphTransactionsEncoder<>();
-
-    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      cEncoder = new GSpanGraphCollectionEncoder<>();
-
-    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder();
-
     FSMConfig fsmConfig = FSMConfig.forDirectedMultigraph(0.4f);
 
-    tEncoder.encode(dataSource.getGraphTransactions(), fsmConfig);
-    cEncoder.encode(dataSource.getGraphCollection(), fsmConfig);
-    tlfEncoder.encode(dataSource.getTLFGraphs(), fsmConfig);
+    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      tEncoder = new GSpanGraphTransactionsEncoder<>(fsmConfig);
+
+    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      cEncoder = new GSpanGraphCollectionEncoder<>(fsmConfig);
+
+    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder(fsmConfig);
+
+
+    tEncoder.encode(dataSource.getGraphTransactions());
+    cEncoder.encode(dataSource.getGraphCollection());
+    tlfEncoder.encode(dataSource.getTLFGraphs());
 
     assertEquals(
       tEncoder.getMinFrequency().collect().get(0),
@@ -191,19 +195,20 @@ public class GSpanEncoderTest extends GradoopFlinkTestBase {
     TLFDataSource<GraphHeadPojo, VertexPojo, EdgePojo> dataSource =
       getDataSource();
 
-    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      tEncoder = new GSpanGraphTransactionsEncoder<>();
-
-    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      cEncoder = new GSpanGraphCollectionEncoder<>();
-
-    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder();
-
     FSMConfig fsmConfig = FSMConfig.forDirectedMultigraph(0.4f);
 
-    tEncoder.encode(dataSource.getGraphTransactions(), fsmConfig);
-    cEncoder.encode(dataSource.getGraphCollection(), fsmConfig);
-    tlfEncoder.encode(dataSource.getTLFGraphs(), fsmConfig);
+    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      tEncoder = new GSpanGraphTransactionsEncoder<>(fsmConfig);
+
+    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      cEncoder = new GSpanGraphCollectionEncoder<>(fsmConfig);
+
+    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder(fsmConfig);
+
+
+    tEncoder.encode(dataSource.getGraphTransactions());
+    cEncoder.encode(dataSource.getGraphCollection());
+    tlfEncoder.encode(dataSource.getTLFGraphs());
 
     List<String> tDictionary = tEncoder
       .getVertexLabelDictionary().collect().get(0);
@@ -221,25 +226,26 @@ public class GSpanEncoderTest extends GradoopFlinkTestBase {
     TLFDataSource<GraphHeadPojo, VertexPojo, EdgePojo> dataSource =
       getDataSource();
 
-    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      tEncoder = new GSpanGraphTransactionsEncoder<>();
-
-    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
-      cEncoder = new GSpanGraphCollectionEncoder<>();
-
-    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder();
-
     FSMConfig fsmConfig = FSMConfig.forDirectedMultigraph(0.4f);
 
-    tEncoder.encode(dataSource.getGraphTransactions(), fsmConfig);
-    cEncoder.encode(dataSource.getGraphCollection(), fsmConfig);
-    tlfEncoder.encode(dataSource.getTLFGraphs(), fsmConfig);
+    GSpanGraphTransactionsEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      tEncoder = new GSpanGraphTransactionsEncoder<>(fsmConfig);
+
+    GSpanGraphCollectionEncoder<GraphHeadPojo, VertexPojo, EdgePojo>
+      cEncoder = new GSpanGraphCollectionEncoder<>(fsmConfig);
+
+    GSpanTLFGraphEncoder tlfEncoder = new GSpanTLFGraphEncoder(fsmConfig);
+
+
+    tEncoder.encode(dataSource.getGraphTransactions());
+    cEncoder.encode(dataSource.getGraphCollection());
+    tlfEncoder.encode(dataSource.getTLFGraphs());
 
     List<String> tDictionary = tEncoder
       .getEdgeLabelDictionary().collect().get(0);
     List<String> cDictionary = cEncoder
       .getEdgeLabelDictionary().collect().get(0);
-    List<String> tlfDictionary = (List<String>)tlfEncoder
+    List<String> tlfDictionary = tlfEncoder
       .getEdgeLabelDictionary().collect().get(0);
 
     assertEqualDictionaries(tDictionary, cDictionary);

@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.configuration.Configuration;
 import org.gradoop.model.impl.algorithms.fsm.config.BroadcastNames;
+import org.gradoop.model.impl.algorithms.fsm.config.FSMConfig;
 import org.gradoop.model.impl.algorithms.fsm.gspan.GSpan;
 import org.gradoop.model.impl.algorithms.fsm.gspan.encoders.tuples.EdgeTriple;
 import org.gradoop.model.impl.algorithms.fsm.gspan.encoders.tuples.EdgeTripleWithStringEdgeLabel;
@@ -42,6 +43,18 @@ public class EdgeLabelsEncoderInteger extends RichMapFunction
    * edge label dictionary
    */
   private Map<String, Integer> dictionary;
+  /**
+   * FSM configuration
+   */
+  private final FSMConfig fsmConfig;
+
+  /**
+   * Constructor.
+   * @param fsmConfig FSM configuration
+   */
+  public EdgeLabelsEncoderInteger(FSMConfig fsmConfig) {
+    this.fsmConfig = fsmConfig;
+  }
 
   @Override
   public void open(Configuration parameters) throws Exception {
@@ -53,12 +66,12 @@ public class EdgeLabelsEncoderInteger extends RichMapFunction
 
   @Override
   public GSpanGraph map(
-    Collection<EdgeTripleWithStringEdgeLabel<Integer>> stringTriples) throws
+    Collection<EdgeTripleWithStringEdgeLabel<Integer>> triples) throws
     Exception {
 
     Collection<EdgeTriple<Integer>> intTriples = Lists.newArrayList();
 
-    for (EdgeTripleWithStringEdgeLabel<Integer> triple : stringTriples) {
+    for (EdgeTripleWithStringEdgeLabel<Integer> triple : triples) {
       Integer edgeLabel = dictionary.get(triple.getEdgeLabel());
 
       if (edgeLabel != null) {
@@ -71,6 +84,6 @@ public class EdgeLabelsEncoderInteger extends RichMapFunction
       }
     }
 
-    return GSpan.createGSpanGraph(intTriples);
+    return GSpan.createGSpanGraph(intTriples, fsmConfig);
   }
 }

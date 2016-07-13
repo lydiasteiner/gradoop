@@ -19,9 +19,6 @@ package org.gradoop.model.impl.algorithms.fsm.gspan.encoders;
 
 import org.apache.flink.api.java.DataSet;
 import org.gradoop.io.impl.tlf.tuples.TLFGraph;
-import org.gradoop.model.api.EPGMEdge;
-import org.gradoop.model.api.EPGMGraphHead;
-import org.gradoop.model.api.EPGMVertex;
 import org.gradoop.model.impl.algorithms.fsm.config.BroadcastNames;
 import org.gradoop.model.impl.algorithms.fsm.config.FSMConfig;
 import org.gradoop.model.impl.algorithms.fsm.gspan.api.GSpanEncoder;
@@ -54,13 +51,8 @@ import java.util.Map;
  * Transactional FSM pre processing: Determine vertex and edge label
  * frequencies, create frequency based dictionaries and finally translate und
  * filter vertices and edges.
- *
- * @param <G> EPGM graph head type
- * @param <V> EPGM vertex type
- * @param <E> EPGM edge type
  */
 public class GSpanTLFGraphEncoder
-  <G extends EPGMGraphHead, V extends EPGMVertex, E extends EPGMEdge>
   implements GSpanEncoder<DataSet<TLFGraph>> {
   /**
    * minimum support
@@ -76,19 +68,31 @@ public class GSpanTLFGraphEncoder
   private DataSet<List<String>> vertexLabelDictionary;
 
   /**
+   * FSM configuration
+   */
+  private final FSMConfig fsmConfig;
+
+  /**
+   * Constructor.
+   *
+   * @param fsmConfig FSM configuration
+   */
+  public GSpanTLFGraphEncoder(FSMConfig fsmConfig) {
+    this.fsmConfig = fsmConfig;
+  }
+
+  /**
    * Determines edge label frequency and prunes by minimum frequency;
    * label frequencies are used to relabel edges where higher frequency leads
    * to a smaller numeric label.
    *
    * @param graphs input tlf graphs
-   * @param fsmConfig FSM configuration
    * @return pruned and relabelled edges
    */
   @Override
-  public DataSet<GSpanGraph> encode(
-    DataSet<TLFGraph> graphs, FSMConfig fsmConfig) {
+  public DataSet<GSpanGraph> encode(DataSet<TLFGraph> graphs) {
 
-    setMinFrequency(graphs, fsmConfig);
+    setMinFrequency(graphs);
 
     DataSet<Collection<EdgeTripleWithStringEdgeLabel<Integer>>>
       triplesWithStringLabel = encodeVertices(graphs);
@@ -99,12 +103,10 @@ public class GSpanTLFGraphEncoder
   /**
    * Calculates and stores minimum frequency
    * (minimum support * collection size).
+   *  @param graphs input tlf graphs
    *
-   * @param graphs input tlf graphs
-   * @param fsmConfig FSM configuration
    */
-  private void setMinFrequency(
-    DataSet<TLFGraph> graphs, FSMConfig fsmConfig) {
+  private void setMinFrequency(DataSet<TLFGraph> graphs) {
 
     this.minFrequency = Count
       .count(graphs)
@@ -119,8 +121,8 @@ public class GSpanTLFGraphEncoder
    * @return translated and filtered edges
    */
   private DataSet<GSpanGraph> encodeEdges(
-          DataSet<Collection<EdgeTripleWithStringEdgeLabel<Integer>>>
-            tripleCollections) {
+    DataSet<Collection<EdgeTripleWithStringEdgeLabel<Integer>>>
+      tripleCollections) {
 
     edgeLabelDictionary = tripleCollections
       .flatMap(new EdgeLabels<Integer>())
@@ -135,7 +137,7 @@ public class GSpanTLFGraphEncoder
       .map(new InverseDictionary());
 
     return tripleCollections
-      .map(new EdgeLabelsEncoderInteger())
+      .map(new EdgeLabelsEncoderInteger(fsmConfig))
       .withBroadcastSet(reverseDictionary, BroadcastNames.EDGE_DICTIONARY);
   }
 
