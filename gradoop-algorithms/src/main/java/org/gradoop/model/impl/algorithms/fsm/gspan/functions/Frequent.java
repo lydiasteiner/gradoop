@@ -44,6 +44,12 @@ public class Frequent<T> extends RichFilterFunction<WithCount<T>> {
 
   @Override
   public boolean filter(WithCount<T> c) throws Exception {
+
+    if(c.toString().startsWith("([(0:0)-0->(1:0) (1:0)-0->(2:0) (2:0)-1->" +
+      "(3:0) (3:0)-0->(4:0) (4:0)-0->(5:0) (1:0)-1->(6:0) (6:0)-0->(7:0)],")) {
+      System.out.println(c);
+    }
+
     return c.getCount() >= minFrequency;
   }
 }

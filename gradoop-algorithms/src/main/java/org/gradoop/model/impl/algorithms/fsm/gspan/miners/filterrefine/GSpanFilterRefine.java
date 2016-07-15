@@ -19,6 +19,8 @@ package org.gradoop.model.impl.algorithms.fsm.gspan.miners.filterrefine;
 
 import java.util.Collection;
 import java.util.Map;
+
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.gradoop.model.impl.tuples.WithCount;
@@ -96,7 +98,16 @@ public class GSpanFilterRefine extends GSpanBase {
       .reduceGroup(new RefinementCalls())
       .join(partitions)
       .where(0).equalTo(0)
-      .with(new Refinement(fsmConfig));
+      .with(new Refinement(fsmConfig))
+      .map(new MapFunction<WithCount<CompressedDFSCode>, WithCount<CompressedDFSCode>>() {
+
+        @Override
+        public WithCount<CompressedDFSCode> map(
+          WithCount<CompressedDFSCode> value) throws Exception {
+          System.out.println(value);
+          return value;
+        }
+      });
 
     frequentDfsCodes = frequentDfsCodes.union(
       partialResults

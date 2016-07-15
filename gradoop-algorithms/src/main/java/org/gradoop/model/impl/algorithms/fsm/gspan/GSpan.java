@@ -84,7 +84,7 @@ public class GSpan {
     List<DFSStep> steps = subgraph.getSteps();
     List<AdjacencyList> adjacencyLists = Lists.newArrayList();
     List<GSpanEdge> edges = Lists.newArrayListWithExpectedSize(steps.size());
-    createAdjacencyListsAndEdges(steps, adjacencyLists, edges);
+    createAdjacencyListsAndEdges(steps, adjacencyLists, edges, fsmConfig);
 
     return createGSpanGraph(adjacencyLists, edges, fsmConfig);
   }
@@ -262,13 +262,14 @@ public class GSpan {
 
   /**
    * Creates adjacency lists and gSpan edges for a list of DFS steps.
-   *
-   * @param steps DFS steps
+   *  @param steps DFS steps
    * @param adjacencyLists adjacency lists
    * @param edges edges
+   * @param fsmConfig
    */
   private static void createAdjacencyListsAndEdges(final List<DFSStep> steps,
-    final List<AdjacencyList> adjacencyLists, final List<GSpanEdge> edges) {
+    final List<AdjacencyList> adjacencyLists, final List<GSpanEdge> edges,
+    FSMConfig fsmConfig) {
 
     int edgeId = 0;
     for (DFSStep step : steps) {
@@ -281,7 +282,8 @@ public class GSpan {
       Integer targetId;
       Integer targetLabel;
 
-      if (step.isOutgoing()) {
+
+      if (!fsmConfig.isDirected() || step.isOutgoing()) {
         sourceId = step.getFromTime();
         sourceLabel = step.getFromLabel();
         targetId = step.getToTime();
@@ -625,7 +627,8 @@ public class GSpan {
     for (AdjacencyList adjacencyList : graph.getAdjacencyLists()) {
       if (step.getFromLabel().equals(adjacencyList.getFromVertexLabel())) {
         for (AdjacencyListEntry entry : adjacencyList.getEntries()) {
-          if (step.isOutgoing() == entry.isOutgoing() &&
+          if ((!fsmConfig.isDirected() ||
+            step.isOutgoing() == entry.isOutgoing()) &&
             step.getEdgeLabel().equals(entry.getEdgeLabel()) &&
             step.getToLabel().equals(entry.getToVertexLabel())) {
 

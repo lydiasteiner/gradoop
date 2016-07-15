@@ -20,7 +20,7 @@ CLASS="org.gradoop.benchmark.fsm.TLFDataDuplicator"
 
 #Running commands
 
-for SIZE in 1 10
+for SIZE in 1 10 100 1000
 do
   ${FLINK}/bin/flink run -p ${PARA} -c ${CLASS} ${JAR} -i hdfs://${HDFS}/yeast.tlf -m ${SIZE}
 done
